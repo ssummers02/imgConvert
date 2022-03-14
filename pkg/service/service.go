@@ -1,7 +1,9 @@
 package service
 
+import "imgConverter/pkg/restmodel"
+
 type Img interface {
-	Create()
+	ImageProcessing(options restmodel.ImgOptions, path string) (string, error)
 }
 
 type Service struct {

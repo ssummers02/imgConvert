@@ -1,6 +1,8 @@
 package main
 
-import "imgConverter/pkg/app"
+import (
+	"imgConverter/pkg/app"
+)
 
 const ConfigPath = "configs"
 

@@ -20,7 +20,16 @@ func Run(path string) {
 	if err := initConfig(path); err != nil {
 		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
-
+	err := os.MkdirAll(service.ImgDirectory, os.ModePerm)
+	if err != nil {
+		logrus.Fatalf("error create directory: %s", err.Error())
+		return
+	}
+	err = os.MkdirAll(service.ImgResult, os.ModePerm)
+	if err != nil {
+		logrus.Fatalf("error create directory: %s", err.Error())
+		return
+	}
 	services := service.NewService()
 	srv := handler.NewServer(viper.GetString("port"), services)
 

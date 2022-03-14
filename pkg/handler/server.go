@@ -35,6 +35,8 @@ func NewServer(port string, services *service.Service) *Server {
 
 func (s *Server) Run() error {
 	s.initRoutes()
+	s.r.HandleFunc("/", s.indexHandler).
+		Methods(http.MethodGet, http.MethodOptions)
 	return s.httpServer.ListenAndServe()
 }
 
@@ -45,7 +47,6 @@ func (s *Server) Shutdown(ctx context.Context) error {
 func (s *Server) initRoutes() {
 	img := s.r.PathPrefix("/api").
 		Subrouter()
-	img.HandleFunc("", s.convertImg).
+	img.HandleFunc("/convert", s.convertImg).
 		Methods(http.MethodPost, http.MethodOptions)
-
 }
