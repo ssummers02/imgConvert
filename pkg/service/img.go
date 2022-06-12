@@ -9,11 +9,7 @@ import (
 	"github.com/h2non/bimg"
 )
 
-const ImgDirectory = "uploads"
-const ImgResult = "result"
-
-type ImgService struct {
-}
+type ImgService struct{}
 
 func NewImgService() *ImgService {
 	return &ImgService{}
@@ -26,7 +22,7 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 		Height:  options.Height,
 	}
 
-	buffer, err := bimg.Read(filepath.Join(ImgDirectory, name))
+	buffer, err := bimg.Read(name)
 	if err != nil {
 		return "", err
 	}
@@ -36,17 +32,19 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 		return "", err
 	}
 
-	newImage, err = bimg.NewImage(buffer).Process(opt)
+	newImage, err = bimg.NewImage(newImage).Process(opt)
 	if err != nil {
 		return "", err
 	}
 
-	filename := strings.TrimSuffix(name, filepath.Ext(name)) + "." + options.OutputFormat
+	filename := strings.TrimSuffix(name, filepath.Ext(name)) + "-res." + options.OutputFormat
 
-	path := filepath.Join(ImgResult, filename)
-	bimg.Write(path, newImage)
+	err = bimg.Write(filename, newImage)
+	if err != nil {
+		return "", err
+	}
 
-	return path, nil
+	return filename, nil
 }
 
 func convertExt(buf []byte, ext string) ([]byte, error) {
@@ -58,5 +56,6 @@ func convertExt(buf []byte, ext string) ([]byte, error) {
 	case "jpg", "jpeg":
 		return bimg.NewImage(buf).Convert(bimg.JPEG)
 	}
+
 	return nil, errors.New("ext error")
 }

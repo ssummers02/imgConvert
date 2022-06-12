@@ -25,17 +25,6 @@ func SendErr(w http.ResponseWriter, code int, text string) {
 	)
 }
 
-// SendOK sends a response to the client in case of success.
-func SendOK(w http.ResponseWriter, code int, p interface{}) {
-	w.WriteHeader(code)
-	w.Header().Add("Content-Type", "application/json")
-
-	// These two do not allow body
-	_ = json.NewEncoder(w).Encode(
-		p,
-	)
-}
-
 func sendFile(w http.ResponseWriter, r *http.Request, fileName string) {
 	w.Header().Set("Content-Disposition", "attachment; filename="+strconv.Quote(fileName))
 	w.Header().Set("Content-Type", "application/octet-stream")

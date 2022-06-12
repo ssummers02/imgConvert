@@ -6,36 +6,32 @@ import (
 	"imgConverter/pkg/service"
 	"os"
 	"os/signal"
-
 	"syscall"
 
-	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-func Run(path string) {
+func RunWeb(path string) {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 
 	if err := initConfig(path); err != nil {
 		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
-	err := os.MkdirAll(service.ImgDirectory, os.ModePerm)
+
+	err := os.MkdirAll(handler.ImgDirectory, os.ModePerm)
 	if err != nil {
 		logrus.Fatalf("error create directory: %s", err.Error())
+
 		return
 	}
-	err = os.MkdirAll(service.ImgResult, os.ModePerm)
-	if err != nil {
-		logrus.Fatalf("error create directory: %s", err.Error())
-		return
-	}
+
 	services := service.NewService()
 	srv := handler.NewServer(viper.GetString("port"), services)
 
 	go func() {
 		if err := srv.Run(); err != nil {
-			logrus.Fatalf("error occured while running http server: %s", err.Error())
+			logrus.Fatalf("error occurred while running http server: %s", err.Error())
 		}
 	}()
 
@@ -48,9 +44,8 @@ func Run(path string) {
 	logrus.Print("TodoApp Shutting Down")
 
 	if err := srv.Shutdown(context.Background()); err != nil {
-		logrus.Errorf("error occured on server shutting down: %s", err.Error())
+		logrus.Errorf("error occurred on server shutting down: %s", err.Error())
 	}
-
 }
 
 func initConfig(path string) error {

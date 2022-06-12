@@ -19,6 +19,7 @@ type Server struct {
 
 func NewServer(port string, services *service.Service) *Server {
 	r := mux.NewRouter()
+
 	return &Server{
 		httpServer: &http.Server{
 			Addr:           ":" + port,
@@ -37,6 +38,7 @@ func (s *Server) Run() error {
 	s.initRoutes()
 	s.r.HandleFunc("/", s.indexHandler).
 		Methods(http.MethodGet, http.MethodOptions)
+
 	return s.httpServer.ListenAndServe()
 }
 

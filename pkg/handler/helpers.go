@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"imgConverter/pkg/service"
 	"io"
 	"mime/multipart"
 	"os"
@@ -10,24 +9,13 @@ import (
 
 func writeFile(file multipart.File, fileHeader *multipart.FileHeader) error {
 	buff := make([]byte, 512)
+
 	_, err := file.Read(buff)
 	if err != nil {
 		return err
 	}
 
-	/*	detectedFileType := http.DetectContentType(buff)
-		switch detectedFileType {
-		case "image/jpeg":
-		case "image/jpg":
-		case "image/svg":
-		case "image/png":
-			break
-		default:
-			SendErr(w, http.StatusBadRequest, "The provided file format is not allowed. Please upload a JPEG, SVG or PNG image")
-			return
-		}*/
-
-	pathUp := filepath.Join(service.ImgDirectory, fileHeader.Filename)
+	pathUp := filepath.Join(ImgDirectory, fileHeader.Filename)
 
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
@@ -44,5 +32,6 @@ func writeFile(file multipart.File, fileHeader *multipart.FileHeader) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

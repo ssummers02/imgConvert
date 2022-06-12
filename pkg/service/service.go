@@ -3,7 +3,7 @@ package service
 import "imgConverter/pkg/restmodel"
 
 type Img interface {
-	ImageProcessing(options restmodel.ImgOptions, path string) (string, error)
+	ImageProcessing(options restmodel.ImgOptions, name string) (string, error)
 }
 
 type Service struct {

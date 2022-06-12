@@ -12,4 +12,4 @@ RUN go mod download
 RUN go build -o app ./cmd/main.go
 
 EXPOSE 8080 8080
-ENTRYPOINT ["./app"]
+ENTRYPOINT ["./app -mode web"]

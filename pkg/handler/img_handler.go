@@ -4,33 +4,40 @@ import (
 	"encoding/json"
 	"fmt"
 	"imgConverter/pkg/restmodel"
-	"imgConverter/pkg/service"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
-const MAX_UPLOAD_SIZE = 32 << 20
+const (
+	MaxUploadSize = 32 << 20
+	ImgDirectory  = "uploads"
+)
 
 func (s *Server) convertImg(w http.ResponseWriter, r *http.Request) {
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
 		SendErr(w, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 	defer file.Close()
 
-	if fileHeader.Size > MAX_UPLOAD_SIZE {
+	if fileHeader.Size > MaxUploadSize {
 		SendErr(w, http.StatusBadRequest, fmt.Sprintf("The uploaded image is too big: %s.", fileHeader.Filename))
+
 		return
 	}
 
 	err = writeFile(file, fileHeader)
 	if err != nil {
-		SendErr(w, http.StatusInternalServerError, fmt.Sprintf("Error write file"))
+		SendErr(w, http.StatusInternalServerError, fmt.Sprintln("Error write file"))
+
 		return
 	}
-	pathUploads := filepath.Join(service.ImgDirectory, fileHeader.Filename)
+
+	pathUploads := filepath.Join(ImgDirectory, fileHeader.Filename)
+
 	defer os.Remove(pathUploads)
 
 	opt := restmodel.ImgOptions{
@@ -40,15 +47,18 @@ func (s *Server) convertImg(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal([]byte(r.FormValue("json")), &opt)
 	if err != nil {
-		SendErr(w, http.StatusBadRequest, "json")
+		SendErr(w, http.StatusBadRequest, "error json")
+
 		return
 	}
 
-	converting, err := s.services.Img.ImageProcessing(opt, fileHeader.Filename)
+	converting, err := s.services.Img.ImageProcessing(opt, pathUploads)
 	if err != nil {
 		SendErr(w, http.StatusBadRequest, err.Error())
+
 		return
 	}
+
 	defer os.Remove(converting)
 
 	sendFile(w, r, converting)
