@@ -47,6 +47,11 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 		return "", err
 	}
 
+	newImage, err = s.imageResize(options.MaxSize, newImage)
+	if err != nil {
+		return "", err
+	}
+
 	filename := strings.TrimSuffix(name, filepath.Ext(name)) + "-res." + options.OutputFormat
 
 	err = bimg.Write(filename, newImage)
@@ -57,15 +62,14 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 	return filename, nil
 }
 
-func (s *ImgService) ImageResize(options restmodel.ImgOptions, name string) (string, error) {
-	buffer, err := bimg.Read(name)
-	if err != nil {
-		return "", err
+func (s *ImgService) imageResize(maxSize int, buffer []byte) ([]byte, error) {
+	if maxSize == 0 {
+		return buffer, nil
 	}
 
 	imgMD, err := bimg.NewImage(buffer).Metadata()
 	if err != nil {
-		return "", err
+		return []byte{}, err
 	}
 
 	imgWidth := imgMD.Size.Width
@@ -75,23 +79,16 @@ func (s *ImgService) ImageResize(options restmodel.ImgOptions, name string) (str
 		w = 10
 	}
 
-	for len(buffer) > options.MaxSize {
+	for len(buffer) > maxSize {
 		imgWidth -= w
 
 		buffer, err = bimg.NewImage(buffer).Resize(imgWidth, 0)
 		if err != nil {
-			return "", err
+			return []byte{}, err
 		}
 	}
 
-	filename := strings.TrimSuffix(name, filepath.Ext(name)) + "-res." + options.OutputFormat
-
-	err = bimg.Write(filename, buffer)
-	if err != nil {
-		return "", err
-	}
-
-	return filename, nil
+	return buffer, nil
 }
 
 func convertExt(buf []byte, ext string) ([]byte, error) {
