@@ -20,6 +20,14 @@ var (
 		"set quality")
 	format = flag.String("format", "",
 		"set output format")
+	top = flag.Int("crop_top", 0,
+		"set crop_top")
+	left = flag.Int("crop_left", 0,
+		"set crop_left")
+	bottom = flag.Int("crop_bottom", 0,
+		"set crop_bottom")
+	right = flag.Int("crop_right", 0,
+		"set crop_right")
 )
 
 //nolint:forbidigo
@@ -43,6 +51,22 @@ func RunCli() {
 
 	if *quality != 100 {
 		opt.Quality = *quality
+	}
+
+	if *top != 0 {
+		opt.CropTop = *top
+	}
+
+	if *left != 0 {
+		opt.CropLeft = *left
+	}
+
+	if *bottom != 0 {
+		opt.CropBottom = *bottom
+	}
+
+	if *right != 0 {
+		opt.CropRight = *right
 	}
 
 	if *format != "" {

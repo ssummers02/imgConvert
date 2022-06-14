@@ -27,11 +27,20 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 		return "", err
 	}
 
+	imgMD, err := bimg.NewImage(buffer).Metadata()
+	if err != nil {
+		return "", err
+	}
+
 	newImage, err := convertExt(buffer, options.OutputFormat)
 	if err != nil {
 		return "", err
 	}
 
+	newImage, err = bimg.NewImage(newImage).Extract(options.CropTop, options.CropLeft, imgMD.Size.Width-options.CropRight-options.CropLeft, imgMD.Size.Height-options.CropBottom-options.CropTop)
+	if err != nil {
+		return "", err
+	}
 	newImage, err = bimg.NewImage(newImage).Process(opt)
 	if err != nil {
 		return "", err
