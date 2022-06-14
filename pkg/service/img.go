@@ -57,6 +57,43 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 	return filename, nil
 }
 
+func (s *ImgService) ImageResize(options restmodel.ImgOptions, name string) (string, error) {
+	buffer, err := bimg.Read(name)
+	if err != nil {
+		return "", err
+	}
+
+	imgMD, err := bimg.NewImage(buffer).Metadata()
+	if err != nil {
+		return "", err
+	}
+
+	imgWidth := imgMD.Size.Width
+
+	w := 100
+	if imgWidth < 1000 {
+		w = 10
+	}
+
+	for len(buffer) > options.MaxSize {
+		imgWidth -= w
+
+		buffer, err = bimg.NewImage(buffer).Resize(imgWidth, 0)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	filename := strings.TrimSuffix(name, filepath.Ext(name)) + "-res." + options.OutputFormat
+
+	err = bimg.Write(filename, buffer)
+	if err != nil {
+		return "", err
+	}
+
+	return filename, nil
+}
+
 func convertExt(buf []byte, ext string) ([]byte, error) {
 	switch strings.ToLower(ext) {
 	case "png":

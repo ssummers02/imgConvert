@@ -28,6 +28,8 @@ var (
 		"set crop_bottom")
 	right = flag.Int("crop_right", 0,
 		"set crop_right")
+	maxSize = flag.Int("maxSize", 0,
+		"set maxSize")
 )
 
 //nolint:forbidigo
@@ -67,6 +69,10 @@ func RunCli() {
 
 	if *right != 0 {
 		opt.CropRight = *right
+	}
+
+	if *maxSize != 0 {
+		opt.MaxSize = *maxSize
 	}
 
 	if *format != "" {

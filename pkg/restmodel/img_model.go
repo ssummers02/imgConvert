@@ -9,4 +9,5 @@ type ImgOptions struct {
 	CropLeft     int    `json:"crop_left,omitempty"`
 	CropBottom   int    `json:"crop_bottom,omitempty"`
 	CropRight    int    `json:"crop_right,omitempty"`
+	MaxSize      int    `json:"max_size,omitempty"`
 }

@@ -51,4 +51,6 @@ func (s *Server) initRoutes() {
 		Subrouter()
 	img.HandleFunc("/convert", s.convertImg).
 		Methods(http.MethodPost, http.MethodOptions)
+	img.HandleFunc("/maxsize", s.maxSize).
+		Methods(http.MethodPost, http.MethodOptions)
 }
