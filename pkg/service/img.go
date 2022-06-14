@@ -41,6 +41,7 @@ func (s *ImgService) ImageProcessing(options restmodel.ImgOptions, name string) 
 	if err != nil {
 		return "", err
 	}
+
 	newImage, err = bimg.NewImage(newImage).Process(opt)
 	if err != nil {
 		return "", err
