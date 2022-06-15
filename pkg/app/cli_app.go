@@ -10,8 +10,7 @@ import (
 
 var (
 	width = flag.Int("width", 0,
-		"set width",
-	)
+		"set width")
 	height = flag.Int("height", 0,
 		"set height")
 	path = flag.String("path", "",
